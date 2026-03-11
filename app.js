@@ -35,8 +35,6 @@ const PIECE = {
   firstNoteLeadIn: 0.9,
 };
 
-const KEYBOARD_START = 21;
-const KEYBOARD_END = 108;
 const WHITE_NOTES = new Set([0, 2, 4, 5, 7, 9, 11]);
 const NOTE_NAMES = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
 const devicePixelRatioValue = window.devicePixelRatio || 1;
@@ -114,9 +112,10 @@ const isPieceReady = () => appState.midiReady && appState.audioReady && appState
 const buildKeyboard = () => {
   const whiteKeys = [];
   const blackKeys = [];
+  const visibleRange = getVisibleRange();
   let whiteIndex = 0;
 
-  for (let midi = KEYBOARD_START; midi <= KEYBOARD_END; midi += 1) {
+  for (let midi = visibleRange.min; midi <= visibleRange.max; midi += 1) {
     const pitchClass = midi % 12;
     const noteName = midiToNoteName(midi);
     const isWhite = WHITE_NOTES.has(pitchClass);
@@ -303,6 +302,8 @@ const measureLanes = () => {
 };
 
 const resizeCanvas = () => {
+  buildKeyboard();
+
   const rect = canvas.getBoundingClientRect();
   const width = Math.max(1, Math.round(rect.width));
   const height = Math.max(1, Math.round(rect.height));
@@ -474,7 +475,6 @@ const restartPlayback = async () => {
   setStatus("Ready");
 };
 
-buildKeyboard();
 setStatus("Loading MIDI...");
 
 audio.addEventListener("loadedmetadata", () => {
