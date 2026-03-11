@@ -5,6 +5,9 @@ const canvas = document.querySelector("#note-canvas");
 const placeholder = document.querySelector("#visualizer-placeholder");
 const placeholderLabel = placeholder.querySelector("strong");
 const visualizerShell = document.querySelector(".visualizer-canvas-shell");
+const seekBar = document.querySelector("#seek-bar");
+const seekCurrent = document.querySelector("#seek-current");
+const seekDuration = document.querySelector("#seek-duration");
 const audio = document.querySelector("#piece-audio");
 const hitLine = document.querySelector(".hit-line");
 const canvasContext = canvas.getContext("2d");
@@ -49,6 +52,7 @@ const appState = {
   layoutReady: false,
   resizeFrame: 0,
   renderFrame: 0,
+  isScrubbing: false,
 };
 
 const setStatus = (status) => {
@@ -64,10 +68,20 @@ const setOverlayState = (state) => {
   }
 
   placeholder.hidden = false;
-  placeholderLabel.textContent = state === "paused" ? "paused" : "press play to start";
+  if (state === "loading") {
+    placeholderLabel.textContent = "loading";
+  } else if (state === "paused") {
+    placeholderLabel.textContent = "paused";
+  } else {
+    placeholderLabel.textContent = "press play to start";
+  }
   placeholder.setAttribute(
     "aria-label",
-    state === "paused" ? "Paused. Press to resume playback" : "Press play to start"
+    state === "loading"
+      ? "Loading"
+      : state === "paused"
+        ? "Paused. Press to resume playback"
+        : "Press play to start"
   );
 };
 
@@ -109,16 +123,16 @@ const buildKeyboard = () => {
 
     if (isWhite) {
       whiteKeys.push(
-        `<button class="key key-white" type="button" data-midi="${midi}" aria-label="${noteName}"></button>`
+        `<button class="key key-white" type="button" data-midi="${midi}" aria-label="${noteName}">
+          <span class="key-label">${noteName}</span>
+        </button>`
       );
       whiteIndex += 1;
       continue;
     }
 
     blackKeys.push(
-      `<button class="key key-black" type="button" data-midi="${midi}" aria-label="${noteName}" style="left: calc((100% / 52) * ${whiteIndex});">
-        <span class="key-label">${noteName}</span>
-      </button>`
+      `<button class="key key-black" type="button" data-midi="${midi}" aria-label="${noteName}" style="left: calc((100% / 52) * ${whiteIndex});"></button>`
     );
   }
 
@@ -151,17 +165,36 @@ const syncTheme = () => {
 const updateMidiSummary = () => {
   if (!appState.filteredTimeline.length) {
     progressDisplay.textContent = "00:00 / 00:00";
+    seekCurrent.textContent = "00:00";
+    seekDuration.textContent = "00:00";
+    seekBar.value = "0";
     return;
   }
 
   progressDisplay.textContent = `00:00 / ${formatSeconds(appState.pieceDuration)}`;
+  seekCurrent.textContent = "00:00";
+  seekDuration.textContent = formatSeconds(appState.pieceDuration);
+  seekBar.value = "0";
+};
+
+const updateSeekUI = (currentTime) => {
+  const duration = Math.max(appState.pieceDuration, audio.duration || 0);
+  const progress = duration > 0 ? Math.min(1000, Math.max(0, Math.round((currentTime / duration) * 1000))) : 0;
+
+  if (!appState.isScrubbing) {
+    seekBar.value = String(progress);
+  }
+
+  seekCurrent.textContent = formatSeconds(currentTime);
+  seekDuration.textContent = formatSeconds(duration);
+  progressDisplay.textContent = `${formatSeconds(currentTime)} / ${formatSeconds(duration)}`;
 };
 
 const updateReadyState = () => {
   const ready = isPieceReady();
 
   if (!ready) {
-    setOverlayState("hidden");
+    setOverlayState("loading");
     if (!appState.midiReady) {
       setStatus("Loading MIDI...");
     } else if (!appState.audioReady) {
@@ -385,7 +418,7 @@ const renderFrame = () => {
   const currentTime = getPlaybackTime();
   renderNotes(currentTime);
   setActiveKeys(getActiveMidiNotes(currentTime));
-  progressDisplay.textContent = `${formatSeconds(currentTime)} / ${formatSeconds(appState.pieceDuration)}`;
+  updateSeekUI(currentTime);
 
   if (!audio.paused && !audio.ended) {
     appState.renderFrame = requestAnimationFrame(renderFrame);
@@ -395,6 +428,12 @@ const renderFrame = () => {
 const safeSeek = (time) => {
   audio.currentTime = Math.max(0, Math.min(time, audio.duration || time));
   renderFrame();
+};
+
+const seekFromRangeValue = (value) => {
+  const duration = Math.max(appState.pieceDuration, audio.duration || 0);
+  const nextTime = duration > 0 ? (Number(value) / 1000) * duration : 0;
+  safeSeek(nextTime);
 };
 
 const startPlayback = async () => {
@@ -440,6 +479,7 @@ setStatus("Loading MIDI...");
 
 audio.addEventListener("loadedmetadata", () => {
   appState.audioReady = true;
+  updateSeekUI(0);
   updateReadyState();
 });
 
@@ -447,6 +487,7 @@ audio.addEventListener("ended", () => {
   setStatus("Ended");
   setActiveKeys([]);
   setOverlayState("start");
+  updateSeekUI(Math.max(0, audio.duration || appState.pieceDuration));
   renderFrame();
 });
 
@@ -488,6 +529,19 @@ visualizerShell.addEventListener("click", (event) => {
   if (audio.currentTime > 0 && !audio.ended) {
     startPlayback();
   }
+});
+seekBar.addEventListener("pointerdown", () => {
+  appState.isScrubbing = true;
+});
+seekBar.addEventListener("input", (event) => {
+  seekFromRangeValue(event.target.value);
+});
+seekBar.addEventListener("change", (event) => {
+  appState.isScrubbing = false;
+  seekFromRangeValue(event.target.value);
+});
+seekBar.addEventListener("pointerup", () => {
+  appState.isScrubbing = false;
 });
 window.addEventListener("resize", queueResize);
 

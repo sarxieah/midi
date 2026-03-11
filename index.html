@@ -7,6 +7,9 @@
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+  <div class="orientation-overlay" aria-hidden="true">
+    <div class="orientation-overlay-copy">rotate phone sideways</div>
+  </div>
   <div class="app-shell">
     <main class="main-stage">
       <section class="visualizer-panel" aria-label="Piano roll visualization">
@@ -27,6 +30,21 @@
         <section class="piano-dock" aria-label="Piano keyboard">
           <div class="piano-shell">
             <div class="keyboard" id="keyboard" aria-label="88-key piano keyboard"></div>
+          </div>
+          <div class="playback-scrubber">
+            <input
+              type="range"
+              id="seek-bar"
+              min="0"
+              max="1000"
+              value="0"
+              step="1"
+              aria-label="Playback position"
+            >
+            <div class="scrubber-times" aria-hidden="true">
+              <span id="seek-current">00:00</span>
+              <span id="seek-duration">00:00</span>
+            </div>
           </div>
         </section>
       </section>
