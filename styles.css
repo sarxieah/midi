@@ -6,6 +6,8 @@
   --panel-strong: rgba(25, 31, 46, 0.96);
   --accent: #ff9f43;
   --accent-soft: rgba(255, 159, 67, 0.18);
+  --note-color: #ff8f6b;
+  --note-glow: rgba(255, 143, 107, 0.35);
   --text: #edf2ff;
   --muted: #9ea7bd;
   --shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
@@ -86,6 +88,12 @@ h1 {
   background: rgba(30, 36, 52, 0.96);
 }
 
+.transport button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+  box-shadow: none;
+}
+
 .main-stage {
   display: block;
 }
@@ -130,6 +138,24 @@ h1 {
   padding: 18px 22px 22px;
 }
 
+#note-canvas {
+  display: block;
+  width: 100%;
+  height: calc(62vh - 40px);
+  min-height: calc(62vh - 40px);
+  border-radius: 22px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.03), transparent 18%),
+    linear-gradient(180deg, rgba(5, 8, 14, 0.24), rgba(4, 5, 8, 0.58)),
+    repeating-linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0.028) 0,
+      rgba(255, 255, 255, 0.028) 1px,
+      transparent 1px,
+      transparent 52px
+    );
+}
+
 .hit-line {
   position: absolute;
   left: 22px;
@@ -141,9 +167,10 @@ h1 {
 }
 
 .visualizer-placeholder {
+  position: absolute;
+  inset: 18px 22px 22px;
   display: grid;
   place-items: center;
-  min-height: calc(62vh - 40px);
   border: 1px dashed rgba(255, 255, 255, 0.16);
   border-radius: 22px;
   color: var(--muted);
@@ -189,7 +216,7 @@ h1 {
 
 .piano-dock-header,
 .piano-shell {
-  width: min(calc(100% - 16px), var(--content-width));
+  width: min(calc(100% - 32px), var(--content-width));
   margin: 0 auto;
 }
 
@@ -337,6 +364,11 @@ h1 {
     padding: 14px 14px 18px;
   }
 
+  #note-canvas {
+    height: calc(54vh - 32px);
+    min-height: calc(54vh - 32px);
+  }
+
   .hit-line {
     left: 14px;
     right: 14px;
@@ -344,7 +376,7 @@ h1 {
   }
 
   .visualizer-placeholder {
-    min-height: calc(54vh - 32px);
+    inset: 14px 14px 18px;
   }
 
   .keyboard {

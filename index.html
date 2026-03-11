@@ -27,10 +27,11 @@
           <span class="progress-text" id="progress-display">00:00 / 00:00</span>
         </div>
         <div class="visualizer-canvas-shell">
+          <canvas id="note-canvas" aria-label="Falling note visualization"></canvas>
           <div class="hit-line" aria-hidden="true"></div>
-          <div class="visualizer-placeholder">
+          <div class="visualizer-placeholder" id="visualizer-placeholder">
             <div class="visualizer-placeholder-copy">
-              <strong>MIDI timeline not loaded yet</strong>
+              <strong>Loading piece data</strong>
               <p id="midi-summary">Waiting for MIDI analysis.</p>
             </div>
           </div>
@@ -48,6 +49,7 @@
     </div>
   </section>
 
+  <audio id="piece-audio" preload="metadata" src="assets/audio/seduction-rene-aubry.mp3"></audio>
   <script src="https://unpkg.com/@tonejs/midi"></script>
   <script src="app.js"></script>
 </body>
