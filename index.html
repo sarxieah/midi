@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Piano Visualizer MVP</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">MVP Piano Visualizer</p>
+        <h1>Seduction</h1>
+      </div>
+      <div class="transport" aria-label="Playback controls">
+        <button type="button" id="play-button">Play</button>
+        <button type="button" id="pause-button">Pause</button>
+        <button type="button" id="restart-button">Restart</button>
+      </div>
+    </header>
+
+    <main class="main-stage">
+      <section class="visualizer-panel" aria-label="Piano roll visualization">
+        <div class="visualizer-meta">
+          <span class="status-pill" id="playback-status">Ready</span>
+          <span class="progress-text" id="progress-display">00:00 / 00:00</span>
+        </div>
+        <div class="visualizer-canvas-shell">
+          <div class="hit-line" aria-hidden="true"></div>
+          <div class="visualizer-placeholder">Visualization area</div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <section class="piano-dock" aria-label="Piano keyboard">
+    <div class="piano-dock-header">
+      <span>Keyboard</span>
+    </div>
+    <div class="piano-shell">
+      <div class="piano-placeholder">Fixed piano area</div>
+    </div>
+  </section>
+
+  <script src="app.js"></script>
+</body>
+</html>

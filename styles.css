@@ -1,0 +1,239 @@
+:root {
+  color-scheme: dark;
+  --bg: #0b0d12;
+  --panel: rgba(18, 23, 33, 0.88);
+  --panel-border: rgba(255, 255, 255, 0.08);
+  --panel-strong: rgba(25, 31, 46, 0.96);
+  --accent: #ff9f43;
+  --accent-soft: rgba(255, 159, 67, 0.18);
+  --text: #edf2ff;
+  --muted: #9ea7bd;
+  --shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
+  --piano-height: 190px;
+  --content-width: 1200px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+  font-family: "Avenir Next", "Segoe UI", sans-serif;
+  background:
+    radial-gradient(circle at top, rgba(255, 159, 67, 0.14), transparent 28%),
+    linear-gradient(180deg, #111522 0%, var(--bg) 60%);
+  color: var(--text);
+}
+
+body {
+  min-height: 100vh;
+}
+
+button {
+  font: inherit;
+}
+
+.app-shell {
+  width: min(calc(100% - 32px), var(--content-width));
+  margin: 0 auto;
+  padding: 28px 0 calc(var(--piano-height) + 40px);
+}
+
+.topbar {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 24px;
+}
+
+.eyebrow {
+  margin: 0 0 8px;
+  font-size: 0.78rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+h1 {
+  margin: 0;
+  font-size: clamp(2rem, 4vw, 3.8rem);
+  line-height: 0.95;
+}
+
+.transport {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.transport button {
+  min-width: 88px;
+  padding: 12px 18px;
+  border: 1px solid var(--panel-border);
+  border-radius: 999px;
+  background: var(--panel);
+  color: var(--text);
+  cursor: pointer;
+  box-shadow: var(--shadow);
+}
+
+.transport button:hover {
+  border-color: rgba(255, 255, 255, 0.18);
+  background: rgba(30, 36, 52, 0.96);
+}
+
+.main-stage {
+  display: block;
+}
+
+.visualizer-panel {
+  position: relative;
+  border: 1px solid var(--panel-border);
+  border-radius: 28px;
+  background: linear-gradient(180deg, rgba(21, 27, 39, 0.96), rgba(11, 14, 20, 0.98));
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+
+.visualizer-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 18px 22px 0;
+}
+
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  min-height: 30px;
+  padding: 0 12px;
+  border-radius: 999px;
+  background: var(--accent-soft);
+  color: #ffd7b0;
+  font-size: 0.85rem;
+}
+
+.progress-text {
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+  font-size: 0.95rem;
+}
+
+.visualizer-canvas-shell {
+  position: relative;
+  min-height: 62vh;
+  padding: 18px 22px 22px;
+}
+
+.hit-line {
+  position: absolute;
+  left: 22px;
+  right: 22px;
+  bottom: 42px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--accent), transparent);
+  opacity: 0.8;
+}
+
+.visualizer-placeholder {
+  display: grid;
+  place-items: center;
+  min-height: calc(62vh - 40px);
+  border: 1px dashed rgba(255, 255, 255, 0.16);
+  border-radius: 22px;
+  color: var(--muted);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.02), transparent),
+    repeating-linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0.02) 0,
+      rgba(255, 255, 255, 0.02) 1px,
+      transparent 1px,
+      transparent 52px
+    );
+}
+
+.piano-dock {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: var(--piano-height);
+  padding: 10px 16px 16px;
+  background: linear-gradient(180deg, rgba(6, 8, 13, 0), rgba(6, 8, 13, 0.92) 24%, rgba(6, 8, 13, 0.98) 100%);
+  backdrop-filter: blur(12px);
+}
+
+.piano-dock-header,
+.piano-shell {
+  width: min(calc(100% - 16px), var(--content-width));
+  margin: 0 auto;
+}
+
+.piano-dock-header {
+  margin-bottom: 8px;
+  color: var(--muted);
+  font-size: 0.85rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.piano-shell {
+  height: calc(var(--piano-height) - 42px);
+  border: 1px solid var(--panel-border);
+  border-radius: 24px;
+  background: var(--panel-strong);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+
+.piano-placeholder {
+  display: grid;
+  place-items: center;
+  height: 100%;
+  color: var(--muted);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.03), transparent 38%),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: auto, 48px 100%;
+}
+
+@media (max-width: 720px) {
+  :root {
+    --piano-height: 170px;
+  }
+
+  .app-shell {
+    width: min(calc(100% - 20px), var(--content-width));
+    padding-top: 20px;
+  }
+
+  .topbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .transport button {
+    flex: 1 1 0;
+  }
+
+  .visualizer-canvas-shell {
+    min-height: 54vh;
+    padding: 14px 14px 18px;
+  }
+
+  .hit-line {
+    left: 14px;
+    right: 14px;
+    bottom: 34px;
+  }
+
+  .visualizer-placeholder {
+    min-height: calc(54vh - 32px);
+  }
+}
