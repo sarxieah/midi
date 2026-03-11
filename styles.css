@@ -354,9 +354,9 @@ button {
 .key-black {
   position: absolute;
   top: 0;
-  width: calc((100% / 52) * 0.64);
+  width: calc((100% / var(--white-key-count, 52)) * 0.64);
   height: 62%;
-  margin-left: calc((100% / 52) * -0.32);
+  margin-left: calc((100% / var(--white-key-count, 52)) * -0.32);
   border-radius: 0 0 8px 8px;
   background: linear-gradient(180deg, #292723 0%, #0e0d0b 100%);
   box-shadow:
@@ -387,24 +387,6 @@ button {
   box-shadow:
     inset 0 -8px 14px rgba(0, 0, 0, 0.26),
     0 8px 14px rgba(17, 14, 10, 0.18);
-}
-
-.key-label {
-  position: absolute;
-  left: 50%;
-  bottom: 10px;
-  transform: translateX(-50%);
-  font-size: 0.53rem;
-  font-weight: 500;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: rgba(17, 16, 13, 0.42);
-  pointer-events: none;
-  white-space: nowrap;
-}
-
-.key-black .key-label {
-  display: none;
 }
 
 @media (max-width: 720px) {
@@ -542,10 +524,5 @@ button {
 
   .key-black {
     height: 60%;
-  }
-
-  .key-label {
-    bottom: 8px;
-    font-size: 0.48rem;
   }
 }

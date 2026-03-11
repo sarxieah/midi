@@ -1,58 +1,78 @@
 <!doctype html>
 <html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Queens Gambit</title>
-  <link rel="stylesheet" href="styles.css">
-</head>
-<body>
-  <div class="app-shell">
-    <div class="portrait-message" aria-hidden="true">
-      for better effects, rotate phone sideways. You might need to copy the link out of instagram
-    </div>
-    <main class="main-stage">
-      <section class="visualizer-panel" aria-label="Piano roll visualization">
-        <div class="visualizer-meta">
-          <span class="status-pill" id="playback-status">Ready</span>
-          <span class="progress-text" id="progress-display">00:00 / 00:00</span>
-        </div>
-        <div class="visualizer-canvas-shell">
-          <canvas id="note-canvas" aria-label="Falling note visualization"></canvas>
-          <div class="hit-line" aria-hidden="true"></div>
-          <div class="visualizer-placeholder" id="visualizer-placeholder" role="button" tabindex="0" aria-label="Press play to start">
-            <div class="visualizer-placeholder-copy">
-              <span class="overlay-signal" aria-hidden="true"></span>
-              <strong>press play to start</strong>
-            </div>
-          </div>
-        </div>
-        <section class="piano-dock" aria-label="Piano keyboard">
-          <div class="piano-shell">
-            <div class="keyboard" id="keyboard" aria-label="88-key piano keyboard"></div>
-          </div>
-          <div class="playback-scrubber">
-            <input
-              type="range"
-              id="seek-bar"
-              min="0"
-              max="1000"
-              value="0"
-              step="1"
-              aria-label="Playback position"
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ukraine</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <div class="portrait-message" aria-hidden="true">
+        for better effects, rotate phone sideways. You might need to copy the
+        link out of instagram
+      </div>
+      <main class="main-stage">
+        <section class="visualizer-panel" aria-label="Piano roll visualization">
+          <div class="visualizer-meta">
+            <span class="status-pill" id="playback-status">Ready</span>
+            <span class="progress-text" id="progress-display"
+              >00:00 / 00:00</span
             >
-            <div class="scrubber-times" aria-hidden="true">
-              <span id="seek-current">00:00</span>
-              <span id="seek-duration">00:00</span>
+          </div>
+          <div class="visualizer-canvas-shell">
+            <canvas
+              id="note-canvas"
+              aria-label="Falling note visualization"
+            ></canvas>
+            <div class="hit-line" aria-hidden="true"></div>
+            <div
+              class="visualizer-placeholder"
+              id="visualizer-placeholder"
+              role="button"
+              tabindex="0"
+              aria-label="Press play to start"
+            >
+              <div class="visualizer-placeholder-copy">
+                <span class="overlay-signal" aria-hidden="true"></span>
+                <strong>press play to start</strong>
+              </div>
             </div>
           </div>
+          <section class="piano-dock" aria-label="Piano keyboard">
+            <div class="piano-shell">
+              <div
+                class="keyboard"
+                id="keyboard"
+                aria-label="88-key piano keyboard"
+              ></div>
+            </div>
+            <div class="playback-scrubber">
+              <input
+                type="range"
+                id="seek-bar"
+                min="0"
+                max="1000"
+                value="0"
+                step="1"
+                aria-label="Playback position"
+              />
+              <div class="scrubber-times" aria-hidden="true">
+                <span id="seek-current">00:00</span>
+                <span id="seek-duration">00:00</span>
+              </div>
+            </div>
+          </section>
         </section>
-      </section>
-    </main>
-  </div>
+      </main>
+    </div>
 
-  <audio id="piece-audio" preload="metadata" src="assets/audio/seduction-rene-aubry.mp3"></audio>
-  <script src="https://unpkg.com/@tonejs/midi"></script>
-  <script src="app.js"></script>
-</body>
+    <audio
+      id="piece-audio"
+      preload="metadata"
+      src="assets/audio/seduction-rene-aubry.mp3"
+    ></audio>
+    <script src="https://unpkg.com/@tonejs/midi"></script>
+    <script src="app.js"></script>
+  </body>
 </html>

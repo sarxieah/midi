@@ -113,6 +113,10 @@ const buildKeyboard = () => {
   const whiteKeys = [];
   const blackKeys = [];
   const visibleRange = getVisibleRange();
+  const whiteKeyCount = Array.from(
+    { length: visibleRange.max - visibleRange.min + 1 },
+    (_, index) => visibleRange.min + index
+  ).filter((midi) => WHITE_NOTES.has(midi % 12)).length;
   let whiteIndex = 0;
 
   for (let midi = visibleRange.min; midi <= visibleRange.max; midi += 1) {
@@ -122,16 +126,14 @@ const buildKeyboard = () => {
 
     if (isWhite) {
       whiteKeys.push(
-        `<button class="key key-white" type="button" data-midi="${midi}" aria-label="${noteName}">
-          <span class="key-label">${noteName}</span>
-        </button>`
+        `<button class="key key-white" type="button" data-midi="${midi}" aria-label="${noteName}"></button>`
       );
       whiteIndex += 1;
       continue;
     }
 
     blackKeys.push(
-      `<button class="key key-black" type="button" data-midi="${midi}" aria-label="${noteName}" style="left: calc((100% / 52) * ${whiteIndex});"></button>`
+      `<button class="key key-black" type="button" data-midi="${midi}" aria-label="${noteName}" style="left: calc((100% / ${whiteKeyCount}) * ${whiteIndex}); --white-key-count: ${whiteKeyCount};"></button>`
     );
   }
 
