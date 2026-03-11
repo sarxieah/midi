@@ -28,7 +28,12 @@
         </div>
         <div class="visualizer-canvas-shell">
           <div class="hit-line" aria-hidden="true"></div>
-          <div class="visualizer-placeholder">Visualization area</div>
+          <div class="visualizer-placeholder">
+            <div class="visualizer-placeholder-copy">
+              <strong>MIDI timeline not loaded yet</strong>
+              <p id="midi-summary">Waiting for MIDI analysis.</p>
+            </div>
+          </div>
         </div>
       </section>
     </main>
@@ -39,10 +44,11 @@
       <span>Keyboard</span>
     </div>
     <div class="piano-shell">
-      <div class="piano-placeholder">Fixed piano area</div>
+      <div class="keyboard" id="keyboard" aria-label="88-key piano keyboard"></div>
     </div>
   </section>
 
+  <script src="https://unpkg.com/@tonejs/midi"></script>
   <script src="app.js"></script>
 </body>
 </html>
