@@ -41,6 +41,10 @@ button {
   padding: 34px 0 34px;
 }
 
+.portrait-message {
+  display: none;
+}
+
 .main-stage {
   display: block;
 }
@@ -462,6 +466,46 @@ button {
 
   .key-black {
     height: 58%;
+  }
+}
+
+@media (max-width: 720px) and (orientation: portrait) {
+  .app-shell {
+    padding-top: 14px;
+  }
+
+  .portrait-message {
+    display: block;
+    margin-bottom: 12px;
+    padding: 12px 14px;
+    border: 1px solid rgba(17, 14, 10, 0.12);
+    border-radius: 18px;
+    background: rgba(255, 255, 255, 0.88);
+    color: rgba(17, 16, 13, 0.78);
+    font-size: 0.72rem;
+    line-height: 1.4;
+    letter-spacing: 0.04em;
+  }
+
+  .visualizer-canvas-shell {
+    min-height: 34vh;
+  }
+
+  #note-canvas {
+    height: 34vh;
+    min-height: 34vh;
+  }
+
+  .piano-dock {
+    height: 184px;
+  }
+
+  .piano-shell {
+    height: 132px;
+  }
+
+  .playback-scrubber {
+    padding-top: 12px;
   }
 }
 
