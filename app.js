@@ -7,9 +7,6 @@ const placeholderLabel = placeholder.querySelector("strong");
 const visualizerShell = document.querySelector(".visualizer-canvas-shell");
 const audio = document.querySelector("#piece-audio");
 const hitLine = document.querySelector(".hit-line");
-const playButton = document.querySelector("#play-button");
-const pauseButton = document.querySelector("#pause-button");
-const restartButton = document.querySelector("#restart-button");
 const canvasContext = canvas.getContext("2d");
 
 const PIECE = {
@@ -18,11 +15,12 @@ const PIECE = {
   audioPath: "assets/audio/seduction-rene-aubry.mp3",
   colors: {
     accent: "#cab9a3",
-    rightHand: "#ff6f4d",
-    rightGlow: "rgba(255, 111, 77, 0.24)",
-    leftHand: "#d6b25e",
-    leftGlow: "rgba(214, 178, 94, 0.24)",
+    rightHand: "#ff8f2c",
+    rightGlow: "#ff8f2c",
+    leftHand: "#cbb79d",
+    leftGlow: "#cbb79d",
   },
+  handSplitMidi: 67,
   pitchRange: { min: 32, max: 100 },
   visibleRangeDesktop: { min: 32, max: 100 },
   visibleRangeMobile: { min: 40, max: 88 },
@@ -95,13 +93,9 @@ const isVisiblePitch = (midi) => {
   return midi >= range.min && midi <= range.max;
 };
 
-const isPieceReady = () => appState.midiReady && appState.audioReady && appState.layoutReady;
+const getHandClass = (midi) => (midi < PIECE.handSplitMidi ? "left" : "right");
 
-const setControlsDisabled = (disabled) => {
-  playButton.disabled = disabled;
-  pauseButton.disabled = disabled;
-  restartButton.disabled = disabled;
-};
+const isPieceReady = () => appState.midiReady && appState.audioReady && appState.layoutReady;
 
 const buildKeyboard = () => {
   const whiteKeys = [];
@@ -135,11 +129,14 @@ const buildKeyboard = () => {
 };
 
 const setActiveKeys = (midiNotes = []) => {
-  const activeSet = new Set(midiNotes);
+  const activeMap = new Map(midiNotes.map((midi) => [midi, getHandClass(midi)]));
 
   keyboardRoot.querySelectorAll(".key").forEach((key) => {
     const midi = Number(key.dataset.midi);
-    key.classList.toggle("active", activeSet.has(midi));
+    const handClass = activeMap.get(midi);
+    key.classList.toggle("active", Boolean(handClass));
+    key.classList.toggle("active-left", handClass === "left");
+    key.classList.toggle("active-right", handClass === "right");
   });
 };
 
@@ -162,7 +159,6 @@ const updateMidiSummary = () => {
 
 const updateReadyState = () => {
   const ready = isPieceReady();
-  setControlsDisabled(!ready);
 
   if (!ready) {
     setOverlayState("hidden");
@@ -294,7 +290,7 @@ const queueResize = () => {
 const getPlaybackTime = () => Math.max(0, audio.currentTime + PIECE.startingOffset);
 
 const getNotePalette = (note) => {
-  if (note.midi < 60) {
+  if (getHandClass(note.midi) === "left") {
     return {
       fill: PIECE.colors.leftHand,
       glow: PIECE.colors.leftGlow,
@@ -440,7 +436,6 @@ const restartPlayback = async () => {
 };
 
 buildKeyboard();
-setControlsDisabled(true);
 setStatus("Loading MIDI...");
 
 audio.addEventListener("loadedmetadata", () => {
@@ -469,9 +464,6 @@ audio.addEventListener("play", () => {
   }
 });
 
-playButton.addEventListener("click", startPlayback);
-pauseButton.addEventListener("click", pausePlayback);
-restartButton.addEventListener("click", restartPlayback);
 placeholder.addEventListener("click", startPlayback);
 placeholder.addEventListener("keydown", (event) => {
   if (event.key === "Enter" || event.key === " ") {

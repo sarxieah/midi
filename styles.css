@@ -41,62 +41,6 @@ button {
   padding: 34px 0 34px;
 }
 
-.topbar {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 24px;
-  margin-bottom: 28px;
-}
-
-.eyebrow {
-  margin: 0 0 14px;
-  font-size: 0.72rem;
-  letter-spacing: 0.24em;
-  text-transform: uppercase;
-  color: var(--muted);
-}
-
-h1 {
-  margin: 0;
-  font-family: Didot, "Bodoni MT", "Times New Roman", serif;
-  font-size: clamp(3rem, 6vw, 5.8rem);
-  font-weight: 400;
-  line-height: 0.88;
-  letter-spacing: -0.04em;
-}
-
-.transport {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-  padding-top: 6px;
-}
-
-.transport button {
-  min-width: 88px;
-  padding: 11px 18px;
-  border: 1px solid var(--panel-border);
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.74);
-  color: var(--text);
-  cursor: pointer;
-  box-shadow: none;
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
-  font-size: 0.72rem;
-}
-
-.transport button:hover {
-  border-color: var(--panel-border-strong);
-  background: var(--surface);
-}
-
-.transport button:disabled {
-  cursor: not-allowed;
-  opacity: 0.45;
-}
-
 .main-stage {
   display: block;
 }
@@ -182,7 +126,7 @@ h1 {
   position: absolute;
   left: 26px;
   right: 26px;
-  bottom: 12px;
+  bottom: 0;
   height: 1px;
   background: linear-gradient(
     90deg,
@@ -289,7 +233,7 @@ h1 {
 .keyboard {
   position: relative;
   height: 100%;
-  padding: 0 12px 14px;
+  padding: 12px 12px 14px;
   background: linear-gradient(
     180deg,
     rgba(255, 255, 255, 0.6),
@@ -300,7 +244,7 @@ h1 {
 .keyboard-white,
 .keyboard-black {
   position: absolute;
-  inset: 0 12px 14px;
+  inset: 12px;
 }
 
 .keyboard-white {
@@ -359,15 +303,25 @@ h1 {
   z-index: 2;
 }
 
-.key-white.active {
-  background: linear-gradient(180deg, #e5d8c7 0%, #cbb79d 100%);
-  box-shadow:
-    inset 0 -8px 14px rgba(92, 71, 48, 0.18),
-    0 0 0 1px rgba(203, 183, 157, 0.4);
+.key-white.active-left,
+.key-black.active-left {
+  background: #cbb79d;
 }
 
-.key-black.active {
-  background: linear-gradient(180deg, #756756 0%, #211d18 100%);
+.key-white.active-right,
+.key-black.active-right {
+  background: #ff8f2c;
+}
+
+.key-white.active-left,
+.key-white.active-right {
+  box-shadow:
+    inset 0 -8px 14px rgba(92, 71, 48, 0.18),
+    0 0 0 1px rgba(17, 14, 10, 0.12);
+}
+
+.key-black.active-left,
+.key-black.active-right {
   box-shadow:
     inset 0 -8px 14px rgba(0, 0, 0, 0.26),
     0 8px 14px rgba(17, 14, 10, 0.18);
@@ -402,20 +356,6 @@ h1 {
     padding-bottom: 20px;
   }
 
-  .topbar {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 18px;
-  }
-
-  h1 {
-    font-size: clamp(2.8rem, 14vw, 4.4rem);
-  }
-
-  .transport button {
-    flex: 1 1 0;
-  }
-
   .visualizer-meta {
     padding: 16px 16px 0;
   }
@@ -433,7 +373,7 @@ h1 {
   .hit-line {
     left: 16px;
     right: 16px;
-    bottom: 10px;
+    bottom: 0;
   }
 
   .visualizer-placeholder {
@@ -446,12 +386,12 @@ h1 {
   }
 
   .keyboard {
-    padding: 0 8px 10px;
+    padding: 8px 8px 10px;
   }
 
   .keyboard-white,
   .keyboard-black {
-    inset: 0 8px 10px;
+    inset: 8px;
   }
 
   .key-black {
