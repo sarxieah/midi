@@ -1,15 +1,15 @@
 const playbackStatus = document.querySelector("#playback-status");
 const progressDisplay = document.querySelector("#progress-display");
 const keyboardRoot = document.querySelector("#keyboard");
-const midiSummary = document.querySelector("#midi-summary");
 const canvas = document.querySelector("#note-canvas");
 const placeholder = document.querySelector("#visualizer-placeholder");
+const placeholderLabel = placeholder.querySelector("strong");
+const visualizerShell = document.querySelector(".visualizer-canvas-shell");
 const audio = document.querySelector("#piece-audio");
 const hitLine = document.querySelector(".hit-line");
 const playButton = document.querySelector("#play-button");
 const pauseButton = document.querySelector("#pause-button");
 const restartButton = document.querySelector("#restart-button");
-const pageTitle = document.querySelector("h1");
 const canvasContext = canvas.getContext("2d");
 
 const PIECE = {
@@ -17,9 +17,11 @@ const PIECE = {
   midiPath: "assets/midi/seduction-rene-aubry.mid",
   audioPath: "assets/audio/seduction-rene-aubry.mp3",
   colors: {
-    accent: "#ff9f43",
-    note: "#ff8f6b",
-    noteGlow: "rgba(255, 143, 107, 0.35)",
+    accent: "#cab9a3",
+    rightHand: "#ff6f4d",
+    rightGlow: "rgba(255, 111, 77, 0.24)",
+    leftHand: "#d6b25e",
+    leftGlow: "rgba(214, 178, 94, 0.24)",
   },
   pitchRange: { min: 32, max: 100 },
   visibleRangeDesktop: { min: 32, max: 100 },
@@ -55,8 +57,20 @@ const setStatus = (status) => {
   playbackStatus.textContent = status;
 };
 
-const setMidiMessage = (message) => {
-  midiSummary.textContent = message;
+const setOverlayState = (state) => {
+  placeholder.dataset.state = state;
+
+  if (state === "hidden") {
+    placeholder.hidden = true;
+    return;
+  }
+
+  placeholder.hidden = false;
+  placeholderLabel.textContent = state === "paused" ? "paused" : "press play to start";
+  placeholder.setAttribute(
+    "aria-label",
+    state === "paused" ? "Paused. Press to resume playback" : "Press play to start"
+  );
 };
 
 const formatSeconds = (seconds) => {
@@ -101,9 +115,7 @@ const buildKeyboard = () => {
 
     if (isWhite) {
       whiteKeys.push(
-        `<button class="key key-white" type="button" data-midi="${midi}" aria-label="${noteName}">
-          <span class="key-label">${noteName}</span>
-        </button>`
+        `<button class="key key-white" type="button" data-midi="${midi}" aria-label="${noteName}"></button>`
       );
       whiteIndex += 1;
       continue;
@@ -133,28 +145,17 @@ const setActiveKeys = (midiNotes = []) => {
 
 const syncTheme = () => {
   document.documentElement.style.setProperty("--accent", PIECE.colors.accent);
-  document.documentElement.style.setProperty("--accent-soft", "rgba(255, 159, 67, 0.18)");
-  document.documentElement.style.setProperty("--note-color", PIECE.colors.note);
-  document.documentElement.style.setProperty("--note-glow", PIECE.colors.noteGlow);
-  pageTitle.textContent = PIECE.title;
+  document.documentElement.style.setProperty("--accent-soft", "rgba(202, 185, 163, 0.18)");
+  document.title = "Queens Gambit";
   audio.src = PIECE.audioPath;
   audio.load();
 };
 
 const updateMidiSummary = () => {
   if (!appState.filteredTimeline.length) {
-    setMidiMessage("No note data available.");
     progressDisplay.textContent = "00:00 / 00:00";
     return;
   }
-
-  const trackList = [...new Set(appState.filteredTimeline.map((note) => `T${note.trackIndex}:${note.channelLabel}`))];
-
-  setMidiMessage(
-    `${appState.filteredTimeline.length} notes on screenable timeline. ` +
-    `Range ${midiToNoteName(PIECE.pitchRange.min)} to ${midiToNoteName(PIECE.pitchRange.max)}. ` +
-    `Duration ${formatSeconds(appState.pieceDuration)}. ${trackList.join("  ")}`
-  );
 
   progressDisplay.textContent = `00:00 / ${formatSeconds(appState.pieceDuration)}`;
 };
@@ -164,6 +165,7 @@ const updateReadyState = () => {
   setControlsDisabled(!ready);
 
   if (!ready) {
+    setOverlayState("hidden");
     if (!appState.midiReady) {
       setStatus("Loading MIDI...");
     } else if (!appState.audioReady) {
@@ -174,7 +176,14 @@ const updateReadyState = () => {
     return;
   }
 
-  placeholder.hidden = true;
+  if (!audio.paused) {
+    setOverlayState("hidden");
+  } else if (audio.currentTime > 0 && !audio.ended) {
+    setOverlayState("paused");
+  } else {
+    setOverlayState("start");
+  }
+
   setStatus(audio.paused ? "Ready" : "Playing");
   renderFrame();
 };
@@ -190,17 +199,13 @@ const pickTrackTimeline = (notes) => {
 const loadMidiData = async () => {
   if (window.location.protocol === "file:") {
     setStatus("Local server required");
-    setMidiMessage("Open this project through a local static server, not by double-clicking index.html.");
     return;
   }
 
   if (!window.Midi || typeof window.Midi.fromUrl !== "function") {
     setStatus("MIDI parser missing");
-    setMidiMessage("The MIDI parser script did not load. Check your internet connection or bundle the library locally.");
     return;
   }
-
-  setMidiMessage(`Loading ${PIECE.midiPath}...`);
 
   try {
     const midi = await window.Midi.fromUrl(PIECE.midiPath);
@@ -242,7 +247,6 @@ const loadMidiData = async () => {
     updateReadyState();
   } catch (error) {
     setStatus("MIDI load failed");
-    setMidiMessage("Failed to load MIDI data. Confirm the file path and check the browser console for the exact error.");
     console.error("Unable to load MIDI", error);
   }
 };
@@ -289,16 +293,40 @@ const queueResize = () => {
 
 const getPlaybackTime = () => Math.max(0, audio.currentTime + PIECE.startingOffset);
 
+const getNotePalette = (note) => {
+  if (note.midi < 60) {
+    return {
+      fill: PIECE.colors.leftHand,
+      glow: PIECE.colors.leftGlow,
+    };
+  }
+
+  return {
+    fill: PIECE.colors.rightHand,
+    glow: PIECE.colors.rightGlow,
+  };
+};
+
 const renderBackground = (width, height) => {
-  const gradient = canvasContext.createLinearGradient(0, 0, 0, height);
-  gradient.addColorStop(0, "rgba(18, 25, 39, 0.18)");
-  gradient.addColorStop(1, "rgba(6, 8, 13, 0)");
-  canvasContext.fillStyle = gradient;
+  canvasContext.clearRect(0, 0, width, height);
+  canvasContext.fillStyle = "#ffffff";
   canvasContext.fillRect(0, 0, width, height);
+
+  appState.laneMap.forEach((lane) => {
+    canvasContext.fillStyle = "rgba(17, 14, 10, 0.045)";
+    canvasContext.fillRect(lane.x, 0, 1, height);
+  });
+
+  const hitLineY = hitLine.getBoundingClientRect().top - canvas.getBoundingClientRect().top;
+  const sectionHeight = Math.max(56, Math.round(hitLineY / 5));
+  for (let y = 0; y <= height; y += sectionHeight) {
+    canvasContext.fillStyle = "rgba(17, 14, 10, 0.055)";
+    canvasContext.fillRect(0, y, width, 1);
+  }
 
   appState.laneMap.forEach((lane, midi) => {
     const alpha = WHITE_NOTES.has(midi % 12) ? 0.06 : 0.03;
-    canvasContext.fillStyle = `rgba(255, 255, 255, ${alpha})`;
+    canvasContext.fillStyle = `rgba(17, 14, 10, ${alpha})`;
     canvasContext.fillRect(lane.x, 0, lane.width, height);
   });
 };
@@ -327,10 +355,12 @@ const renderNotes = (currentTime) => {
       return;
     }
 
-    canvasContext.fillStyle = PIECE.colors.noteGlow;
+    const palette = getNotePalette(note);
+
+    canvasContext.fillStyle = palette.glow;
     canvasContext.fillRect(lane.x, noteTop, lane.width, noteHeight);
 
-    canvasContext.fillStyle = PIECE.colors.note;
+    canvasContext.fillStyle = palette.fill;
     canvasContext.beginPath();
     canvasContext.roundRect(lane.x + 1, noteTop, Math.max(4, lane.width - 2), noteHeight, noteRadius);
     canvasContext.fill();
@@ -373,15 +403,22 @@ const safeSeek = (time) => {
 
 const startPlayback = async () => {
   if (!isPieceReady()) {
+    setStatus(appState.midiReady ? "Loading audio..." : "Loading MIDI...");
     return;
   }
 
   try {
+    if (audio.ended || (audio.duration && audio.currentTime >= audio.duration - 0.05)) {
+      safeSeek(0);
+    }
+
+    setOverlayState("hidden");
     await audio.play();
     setStatus("Playing");
     renderFrame();
   } catch (error) {
     setStatus("Click to start");
+    setOverlayState(audio.currentTime > 0 ? "paused" : "start");
     console.error("Audio playback blocked", error);
   }
 };
@@ -405,7 +442,6 @@ const restartPlayback = async () => {
 buildKeyboard();
 setControlsDisabled(true);
 setStatus("Loading MIDI...");
-setMidiMessage("Waiting for MIDI analysis.");
 
 audio.addEventListener("loadedmetadata", () => {
   appState.audioReady = true;
@@ -415,24 +451,52 @@ audio.addEventListener("loadedmetadata", () => {
 audio.addEventListener("ended", () => {
   setStatus("Ended");
   setActiveKeys([]);
+  setOverlayState("start");
   renderFrame();
 });
 
 audio.addEventListener("pause", () => {
   if (!audio.ended && isPieceReady()) {
     setStatus("Paused");
+    setOverlayState(audio.currentTime > 0 ? "paused" : "start");
   }
 });
 
 audio.addEventListener("play", () => {
   if (isPieceReady()) {
     setStatus("Playing");
+    setOverlayState("hidden");
   }
 });
 
 playButton.addEventListener("click", startPlayback);
 pauseButton.addEventListener("click", pausePlayback);
 restartButton.addEventListener("click", restartPlayback);
+placeholder.addEventListener("click", startPlayback);
+placeholder.addEventListener("keydown", (event) => {
+  if (event.key === "Enter" || event.key === " ") {
+    event.preventDefault();
+    startPlayback();
+  }
+});
+visualizerShell.addEventListener("click", (event) => {
+  if (placeholder.contains(event.target)) {
+    return;
+  }
+
+  if (!isPieceReady()) {
+    return;
+  }
+
+  if (!audio.paused) {
+    pausePlayback();
+    return;
+  }
+
+  if (audio.currentTime > 0 && !audio.ended) {
+    startPlayback();
+  }
+});
 window.addEventListener("resize", queueResize);
 
 syncTheme();
