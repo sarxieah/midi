@@ -172,8 +172,8 @@ button {
 
 .overlay-signal {
   display: none;
-  width: 22px;
-  height: 24px;
+  width: 14px;
+  height: 16px;
   position: relative;
 }
 
@@ -182,22 +182,34 @@ button {
   content: "";
   position: absolute;
   top: 0;
-  width: 6px;
-  height: 24px;
+  width: 4px;
+  height: 16px;
   border-radius: 999px;
   background: rgba(17, 16, 13, 0.78);
 }
 
 .overlay-signal::before {
-  left: 3px;
+  left: 2px;
 }
 
 .overlay-signal::after {
-  right: 3px;
+  right: 2px;
 }
 
 .visualizer-placeholder[data-state="paused"] .overlay-signal {
   display: block;
+}
+
+.visualizer-placeholder[data-state="paused"] {
+  background: transparent;
+}
+
+.visualizer-placeholder[data-state="paused"] .visualizer-placeholder-copy {
+  padding: 8px 12px;
+  gap: 8px;
+  border: 0;
+  border-radius: 12px;
+  background: transparent;
 }
 
 .visualizer-placeholder-copy strong {
